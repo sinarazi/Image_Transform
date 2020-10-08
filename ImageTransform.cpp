@@ -67,13 +67,31 @@ PNG grayscale(PNG image) {
  * @return The image with a spotlight.
  */
 PNG createSpotlight(PNG image, int centerX, int centerY) {
+  for (unsigned x = 0; x < image.width(); x++)
+  {
+    for (unsigned y = 0; y < image.height(); y++)
+    {
+      HSLAPixel &pixel = image.getPixel(x, y);
+      double disOfCenter;
+      int xDis = x - centerX;
+      int yDis = y - centerY;
+      disOfCenter = sqrt(pow(xDis, 2.0) + pow(yDis, 2.0));
+      double decend_amount;
+      
+      if (disOfCenter > 160){
+        decend_amount = 0.2;
+      }else{
 
-  return image;
-  
-}
- 
+        decend_amount = 1 - (0.005 * disOfCenter);
+      }
+      pixel.l *= decend_amount;
+    }
+  }
 
-/**
+      return image;
+    }
+
+    /**
  * Returns a image transformed to Illini colors.
  *
  * The hue of every pixel is set to the a hue value of either orange or
@@ -83,48 +101,47 @@ PNG createSpotlight(PNG image, int centerX, int centerY) {
  *
  * @return The illinify'd image.
 **/
-PNG illinify(PNG image) {
-  for (unsigned x = 0; x < image.width(); x++)
-  {
-    for (unsigned y = 0; y < image.height(); y++)
+    PNG illinify(PNG image)
     {
-      HSLAPixel &pixel = image.getPixel(x, y);
-      int orange_df1 = pixel.h -11;
-      
-      if (orange_df1 < 0)
+      for (unsigned x = 0; x < image.width(); x++)
       {
-        orange_df1 -=1;
-      }
-      
-      int orange_df2 = 371 - pixel.h;
-      int orange_df = (orange_df1<orange_df2)?orange_df1:orange_df2;
-      int blue_df1 = pixel.h - 216;
-      
-      if (blue_df1 < 0)
-      {
-        blue_df1 -= 1;
-      }
-     
-      int blue_df2 = 576 - pixel.h;
-      int blue_df = (blue_df1 < blue_df2) ? blue_df1 : blue_df2;
-      
-      if (orange_df<blue_df)
-      {
-        pixel.h = 11;
-      }
-      else
-      {
-        pixel.h = 216;
-      }     
-     }
-  }
+        for (unsigned y = 0; y < image.height(); y++)
+        {
+          HSLAPixel &pixel = image.getPixel(x, y);
+          int orange_df1 = pixel.h - 11;
 
-  return image;
-}
- 
+          if (orange_df1 < 0)
+          {
+            orange_df1 *= -1;
+          }
 
+          int orange_df2 = 371 - pixel.h;
+          int orange_df = (orange_df1 < orange_df2) ? orange_df1 : orange_df2;
+          int blue_df1 = pixel.h - 216;
 
-/**
+          if (blue_df1 < 0)
+          {
+            blue_df1 *= -1;
+          }
+
+          int blue_df2 = 576 - pixel.h;
+          int blue_df = (blue_df1 < blue_df2) ? blue_df1 : blue_df2;
+
+          if (orange_df < blue_df)
+          {
+            pixel.h = 11;
+          }
+          else
+          {
+            pixel.h = 216;
+          }
+        }
+      }
+
+      return image;
+    }
+
+    /**
 * Returns an immge that has been watermarked by another image.
 *
 * The luminance of every pixel of the second image is checked, if that
@@ -136,7 +153,19 @@ PNG illinify(PNG image) {
 *
 * @return The watermarked image.
 */
-PNG watermark(PNG firstImage, PNG secondImage) {
-
-  return firstImage;
-}
+    PNG watermark(PNG firstImage, PNG secondImage)
+    {
+      for (unsigned x = 0; x < secondImage.width(); x++)
+      {
+        for (unsigned y = 0; y < secondImage.height(); y++)
+        {
+          HSLAPixel &pixel = secondImage.getPixel(x, y);
+          
+          if (pixel.l == 1){
+            HSLAPixel &pixel1 = firstImage.getPixel(x, y);
+            pixel1.l += 0.2;
+        }
+      }
+    }
+          return firstImage;
+        }
