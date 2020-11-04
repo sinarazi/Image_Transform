@@ -1,7 +1,7 @@
 # Image_Transform
 Coursera's image transform project.
 
-Check [here](https://www.coursera.org/learn/cs-fundamentals-1).
+Check the website [here](https://www.coursera.org/learn/cs-fundamentals-1).
 
 ### Hue
 Hue (denoted as h) defines the color itself, for
